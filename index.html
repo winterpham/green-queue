@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b3b2e" />
+  <meta name="description" content="Green Queue - đăng ký hàng chờ thông minh và E-Standby cho xe lạnh." />
+  <title>Green Queue</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230b3b2e'/%3E%3Cpath d='M17 39h30v8H17zM20 24h18l9 10H20z' fill='%23e4ff77'/%3E%3Ccircle cx='24' cy='49' r='5' fill='%23fff'/%3E%3Ccircle cx='42' cy='49' r='5' fill='%23fff'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #10251f;
+      --muted: #63736d;
+      --forest: #0b3b2e;
+      --forest-2: #145a46;
+      --lime: #e4ff77;
+      --paper: #f3f6f1;
+      --card: #ffffff;
+      --line: #d8e1dc;
+      --warning: #f4a340;
+      --danger: #c94545;
+      --shadow: 0 18px 50px rgba(11, 59, 46, .12);
+    }
+    * { box-sizing: border-box; }
+    html { min-height: 100%; background: var(--paper); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font: 16px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 85% 0%, rgba(228,255,119,.45), transparent 30rem),
+        var(--paper);
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(100%, 1100px); margin: 0 auto; padding: 20px 18px 40px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 850; letter-spacing: -.03em; }
+    .brand-mark { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; background: var(--forest); color: var(--lime); }
+    .brand-mark svg { width: 24px; height: 24px; }
+    .place-chip { display: flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.72); color: var(--muted); font-size: .86rem; }
+    .place-chip strong { color: var(--ink); }
+    .grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 26px; align-items: start; }
+    .panel { background: rgba(255,255,255,.96); border: 1px solid rgba(216,225,220,.9); border-radius: 26px; box-shadow: var(--shadow); overflow: hidden; }
+    .panel-head { padding: 26px 26px 18px; border-bottom: 1px solid var(--line); }
+    .eyebrow { margin: 0 0 7px; color: var(--forest-2); font-size: .78rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(1.7rem, 4vw, 2.45rem); line-height: 1.08; letter-spacing: -.055em; }
+    .lede { margin: 11px 0 0; color: var(--muted); max-width: 58ch; }
+    .steps { display: flex; align-items: center; gap: 8px; margin-top: 22px; }
+    .step { height: 5px; flex: 1; border-radius: 999px; background: #e6ece8; transition: .25s ease; }
+    .step.active { background: var(--forest); }
+    .step.done { background: #7cae55; }
+    .screen { display: none; padding: 24px 26px 28px; }
+    .screen.active { display: block; animation: rise .3s ease both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+    .section-title { margin: 0 0 16px; font-size: 1.08rem; letter-spacing: -.02em; }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+    label { display: grid; gap: 7px; color: #42534d; font-size: .88rem; font-weight: 720; }
+    label.full { grid-column: 1 / -1; }
+    input, select {
+      width: 100%; min-height: 48px; border: 1px solid #cfd9d4; border-radius: 13px; background: #fff; color: var(--ink); padding: 0 14px; outline: none;
+    }
+    input:focus, select:focus { border-color: var(--forest-2); box-shadow: 0 0 0 3px rgba(20,90,70,.12); }
+    .service-list { display: grid; gap: 11px; }
+    .service-card { position: relative; display: grid; grid-template-columns: 44px 1fr auto; gap: 13px; align-items: center; padding: 15px; border: 1px solid var(--line); border-radius: 16px; transition: .2s ease; }
+    .service-card:has(input:checked) { border-color: var(--forest-2); background: #f2f8f3; box-shadow: inset 0 0 0 1px var(--forest-2); }
+    .service-card input { position: absolute; opacity: 0; pointer-events: none; }
+    .service-icon { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 13px; background: var(--paper); color: var(--forest); }
+    .service-icon svg { width: 23px; height: 23px; }
+    .service-copy strong { display: block; font-size: .96rem; }
+    .service-copy span { display: block; margin-top: 2px; color: var(--muted); font-size: .8rem; font-weight: 500; }
+    .toggle { width: 25px; height: 25px; display: grid; place-items: center; border: 1px solid #b9c7c0; border-radius: 8px; color: transparent; }
+    .service-card:has(input:checked) .toggle { background: var(--forest); border-color: var(--forest); color: white; }
+    .actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 24px; }
+    .btn { min-height: 49px; border: 0; border-radius: 14px; padding: 0 18px; font-weight: 820; }
+    .btn.primary { background: var(--forest); color: white; box-shadow: 0 10px 22px rgba(11,59,46,.2); }
+    .btn.primary:hover { background: #082f25; }
+    .btn.secondary { background: #edf2ef; color: var(--ink); }
+    .btn.text { background: transparent; color: var(--muted); padding-inline: 5px; }
+    .btn:disabled { opacity: .48; cursor: not-allowed; box-shadow: none; }
+    .aside { display: grid; gap: 15px; }
+    .info-card { padding: 22px; border-radius: 22px; background: var(--forest); color: white; box-shadow: var(--shadow); }
+    .info-card .mini { color: #b8d7cc; font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .spot { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 12px 0 18px; }
+    .spot strong { font-size: 2.1rem; line-height: 1; letter-spacing: -.04em; }
+    .spot span { color: var(--lime); font-size: .82rem; font-weight: 760; }
+    .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    .meta div { padding: 12px; border-radius: 13px; background: rgba(255,255,255,.08); }
+    .meta small { display: block; color: #a9c7bc; }
+    .meta b { display: block; margin-top: 3px; font-size: .92rem; }
+    .note { padding: 18px 20px; border: 1px solid var(--line); border-radius: 19px; background: rgba(255,255,255,.65); }
+    .note strong { display: block; margin-bottom: 5px; }
+    .note p { margin: 0; color: var(--muted); font-size: .88rem; }
+    .success-wrap { text-align: center; padding: 5px 0 4px; }
+    .success-icon { width: 68px; height: 68px; display: grid; place-items: center; margin: 0 auto 16px; border-radius: 22px; background: var(--lime); color: var(--forest); }
+    .success-icon svg { width: 33px; height: 33px; }
+    .ticket { margin-top: 22px; padding: 22px; border: 1px solid var(--line); border-radius: 20px; background: #f8faf8; text-align: left; }
+    .ticket-top { display: flex; justify-content: space-between; align-items: start; gap: 16px; padding-bottom: 17px; border-bottom: 1px dashed #c9d4ce; }
+    .queue-no { font-size: 2.4rem; line-height: 1; letter-spacing: -.05em; }
+    .status-pill { padding: 7px 10px; border-radius: 999px; color: #785019; background: #fff0d8; font-size: .78rem; font-weight: 800; }
+    .ticket-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+    .ticket-grid div { padding: 12px; border-radius: 13px; background: white; }
+    .ticket-grid small { display: block; color: var(--muted); }
+    .ticket-grid b { display: block; margin-top: 4px; font-size: .92rem; }
+    .timeline { display: grid; gap: 0; margin-top: 22px; text-align: left; }
+    .timeline-row { display: grid; grid-template-columns: 22px 1fr; gap: 11px; min-height: 58px; }
+    .rail { display: grid; justify-items: center; grid-template-rows: 16px 1fr; }
+    .dot { width: 16px; height: 16px; border-radius: 50%; border: 4px solid #dfe7e2; background: white; }
+    .line { width: 2px; background: #dfe7e2; }
+    .timeline-row.done .dot { border-color: var(--forest); background: var(--lime); }
+    .timeline-row.done .line { background: var(--forest); }
+    .timeline-copy strong { display: block; font-size: .91rem; }
+    .timeline-copy span { color: var(--muted); font-size: .8rem; }
+    .toast { position: fixed; left: 50%; bottom: 22px; z-index: 10; transform: translate(-50%, 20px); padding: 12px 16px; border-radius: 12px; background: #10251f; color: white; opacity: 0; pointer-events: none; transition: .25s ease; box-shadow: var(--shadow); }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .hidden { display: none !important; }
+    @media (max-width: 820px) {
+      .shell { padding: 15px 13px 30px; }
+      .topbar { margin-bottom: 15px; }
+      .grid { grid-template-columns: 1fr; }
+      .aside { order: -1; grid-template-columns: 1fr 1fr; }
+      .info-card { grid-column: 1 / -1; }
+      .panel { border-radius: 22px; }
+    }
+    @media (max-width: 560px) {
+      .brand .brand-text { display: none; }
+      .place-chip { max-width: calc(100vw - 82px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .panel-head, .screen { padding-left: 18px; padding-right: 18px; }
+      .fields, .ticket-grid { grid-template-columns: 1fr; }
+      .aside { grid-template-columns: 1fr; }
+      .note { display: none; }
+      .actions { align-items: stretch; }
+      .btn.primary { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Green Queue">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 14h12V7H7L3 10v4Z"/><path d="M15 9h3l3 3v2h-6V9Z"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M8 3c3 0 5 1 6 3-3 0-5-1-6-3Z"/></svg>
+        </span>
+        <span class="brand-text">Green Queue</span>
+      </div>
+      <div class="place-chip"><span aria-hidden="true">●</span> Điểm vào: <strong id="gateName">Bãi chờ Hữu Nghị</strong></div>
+    </header>
+
+    <div class="grid">
+      <section class="panel" aria-live="polite">
+        <div class="panel-head">
+          <p class="eyebrow" id="stepLabel">Bước 1/3 · Xác nhận phương tiện</p>
+          <h1 id="mainTitle">Đăng ký vào hàng chờ</h1>
+          <p class="lede" id="mainLede">Nhập thông tin xe và lô hàng để hệ thống kiểm tra điều kiện tiếp nhận.</p>
+          <div class="steps" aria-label="Tiến độ đăng ký"><span class="step active"></span><span class="step"></span><span class="step"></span></div>
+        </div>
+
+        <form id="queueForm" novalidate>
+          <div class="screen active" data-screen="1">
+            <h2 class="section-title">Thông tin chuyến xe</h2>
+            <div class="fields">
+              <label>Biển số xe
+                <input id="plate" name="plate" autocomplete="off" placeholder="Ví dụ: 29H-123.45" required />
+              </label>
+              <label>Số điện thoại tài xế
+                <input id="phone" name="phone" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx" required />
+              </label>
+              <label>Loại hàng
+                <select id="cargo" name="cargo"><option>Sầu riêng tươi</option><option>Thanh long</option><option>Mít tươi</option><option>Hàng lạnh khác</option></select>
+              </label>
+              <label>Khối lượng ước tính
+                <select id="weight" name="weight"><option>10–15 tấn</option><option>15–20 tấn</option><option>Trên 20 tấn</option></select>
+              </label>
+              <label class="full">Mã đặt lịch hoặc Booking ID
+                <input id="booking" name="booking" autocomplete="off" placeholder="Không bắt buộc trong bản demo" />
+              </label>
+            </div>
+            <div class="actions"><span></span><button class="btn primary" type="button" data-next="2">Tiếp tục</button></div>
+          </div>
+
+          <div class="screen" data-screen="2">
+            <h2 class="section-title">Chọn dịch vụ khi chờ</h2>
+            <div class="service-list">
+              <label class="service-card">
+                <input type="checkbox" id="standby" checked />
+                <span class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 6 13h6l-1 9 7-12h-6l1-8Z"/></svg></span>
+                <span class="service-copy"><strong>E-Standby</strong><span>Cấp điện cho thiết bị lạnh trong thời gian chờ</span></span>
+                <span class="toggle">✓</span>
+              </label>
+              <label class="service-card">
+                <input type="checkbox" id="monitor" checked />
+                <span class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 14.8V5a4 4 0 0 0-8 0v9.8a5 5 0 1 0 8 0Z"/><path d="M10 11V6"/></svg></span>
+                <span class="service-copy"><strong>Giám sát nhiệt độ</strong><span>Cảnh báo khi dữ liệu vượt ngưỡng SOP</span></span>
+                <span class="toggle">✓</span>
+              </label>
+              <label class="service-card">
+                <input type="checkbox" id="notify" checked />
+                <span class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"/><path d="M10 21h4"/></svg></span>
+                <span class="service-copy"><strong>Thông báo điều phối</strong><span>Nhận SMS khi xe sắp đến lượt di chuyển</span></span>
+                <span class="toggle">✓</span>
+              </label>
+            </div>
+            <div class="actions"><button class="btn text" type="button" data-back="1">Quay lại</button><button class="btn primary" type="submit">Xác nhận đăng ký</button></div>
+          </div>
+
+          <div class="screen" data-screen="3">
+            <div class="success-wrap">
+              <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 12 4 4L19 6"/></svg></div>
+              <h2 style="margin:0;font-size:1.5rem">Đăng ký thành công</h2>
+              <p style="margin:7px auto 0;color:var(--muted);max-width:42ch">Xe đã được đưa vào hàng chờ ảo. Hãy di chuyển đến vị trí được chỉ định.</p>
+              <div class="ticket">
+                <div class="ticket-top"><div><small style="color:var(--muted)">Số thứ tự</small><strong class="queue-no" id="queueNo">A-018</strong></div><span class="status-pill" id="statusPill">Đang chờ</span></div>
+                <div class="ticket-grid">
+                  <div><small>Vị trí</small><b id="slotNo">E-12</b></div>
+                  <div><small>Dự kiến</small><b id="waitTime">42 phút</b></div>
+                  <div><small>Biển số</small><b id="plateOut">—</b></div>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="timeline-row done"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="timeline-copy"><strong>Đã check-in</strong><span>Thông tin phương tiện đã được xác nhận</span></div></div>
+                <div class="timeline-row done"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="timeline-copy"><strong>Di chuyển đến vị trí E-Standby</strong><span id="slotGuide">Vị trí E-12 · Khu B</span></div></div>
+                <div class="timeline-row" id="dispatchStep"><div class="rail"><span class="dot"></span><span class="line"></span></div><div class="timeline-copy"><strong>Chờ thông báo điều phối</strong><span>Hệ thống sẽ gửi SMS khi xe sắp đến lượt</span></div></div>
+              </div>
+              <div class="actions"><button class="btn secondary" type="button" id="resetBtn">Đăng ký xe khác</button><button class="btn primary" type="button" id="arrivedBtn">Tôi đã vào vị trí</button></div>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <aside class="aside">
+        <div class="info-card">
+          <span class="mini">Tình trạng khu chờ</span>
+          <div class="spot"><strong>18 xe</strong><span>12 vị trí còn trống</span></div>
+          <div class="meta"><div><small>Chờ trung bình</small><b>47 phút</b></div><div><small>Công suất điện</small><b>Ổn định</b></div></div>
+        </div>
+        <div class="note"><strong>Trước khi đăng ký</strong><p>Chuẩn bị biển số, số điện thoại và thông tin lô hàng. Hệ thống không tạo quyền ưu tiên trong thủ tục hải quan hoặc kiểm dịch.</p></div>
+        <div class="note"><strong>Dữ liệu thử nghiệm</strong><p>Đây là nguyên mẫu để minh họa quy trình Green Waiting Module. Số thứ tự và thời gian chờ hiện được mô phỏng.</p></div>
+      </aside>
+    </div>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const form = document.querySelector('#queueForm');
+    const screens = [...document.querySelectorAll('.screen')];
+    const steps = [...document.querySelectorAll('.step')];
+    const stepLabel = document.querySelector('#stepLabel');
+    const mainTitle = document.querySelector('#mainTitle');
+    const mainLede = document.querySelector('#mainLede');
+    const titles = {
+      1: ['Bước 1/3 · Xác nhận phương tiện', 'Đăng ký vào hàng chờ', 'Nhập thông tin xe và lô hàng để hệ thống kiểm tra điều kiện tiếp nhận.'],
+      2: ['Bước 2/3 · Dịch vụ khi chờ', 'Thiết lập thời gian chờ', 'Chọn các dịch vụ phù hợp với tình trạng phương tiện và lô hàng.'],
+      3: ['Bước 3/3 · Hoàn tất', 'Phiếu chờ điện tử', 'Theo dõi vị trí, thời gian dự kiến và trạng thái điều phối của xe.']
+    };
+    const params = new URLSearchParams(location.search);
+    const gate = params.get('gate');
+    if (gate) document.querySelector('#gateName').textContent = gate;
+
+    function showScreen(number) {
+      screens.forEach(s => s.classList.toggle('active', Number(s.dataset.screen) === number));
+      steps.forEach((s, i) => {
+        s.classList.toggle('active', i === number - 1);
+        s.classList.toggle('done', i < number - 1);
+      });
+      [stepLabel.textContent, mainTitle.textContent, mainLede.textContent] = titles[number];
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function toast(message) {
+      const el = document.querySelector('#toast');
+      el.textContent = message;
+      el.classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+    }
+    function validateFirstStep() {
+      const plate = document.querySelector('#plate');
+      const phone = document.querySelector('#phone');
+      if (!plate.value.trim()) { plate.focus(); toast('Vui lòng nhập biển số xe'); return false; }
+      if (!/^[0-9+ ]{9,13}$/.test(phone.value.replace(/[.-]/g, ''))) { phone.focus(); toast('Vui lòng kiểm tra số điện thoại'); return false; }
+      return true;
+    }
+    document.querySelector('[data-next="2"]').addEventListener('click', () => { if (validateFirstStep()) showScreen(2); });
+    document.querySelector('[data-back="1"]').addEventListener('click', () => showScreen(1));
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const seed = Math.floor(Math.random() * 18) + 12;
+      const slot = `E-${Math.floor(Math.random() * 12) + 1}`;
+      const ticket = {
+        queue: `A-${String(seed).padStart(3, '0')}`,
+        slot,
+        wait: `${Math.floor(Math.random() * 24) + 32} phút`,
+        plate: document.querySelector('#plate').value.trim().toUpperCase()
+      };
+      localStorage.setItem('greenQueueTicket', JSON.stringify(ticket));
+      renderTicket(ticket);
+      showScreen(3);
+    });
+    function renderTicket(ticket) {
+      document.querySelector('#queueNo').textContent = ticket.queue;
+      document.querySelector('#slotNo').textContent = ticket.slot;
+      document.querySelector('#waitTime').textContent = ticket.wait;
+      document.querySelector('#plateOut').textContent = ticket.plate;
+      document.querySelector('#slotGuide').textContent = `Vị trí ${ticket.slot} · Khu B`;
+    }
+    document.querySelector('#arrivedBtn').addEventListener('click', event => {
+      event.currentTarget.disabled = true;
+      event.currentTarget.textContent = 'Đã xác nhận vị trí';
+      document.querySelector('#statusPill').textContent = 'Đang cấp điện';
+      document.querySelector('#statusPill').style.cssText = 'color:#145a46;background:#ddf2e6';
+      document.querySelector('#dispatchStep').classList.add('done');
+      toast('Đã xác nhận xe vào vị trí E-Standby');
+    });
+    document.querySelector('#resetBtn').addEventListener('click', () => {
+      localStorage.removeItem('greenQueueTicket');
+      form.reset();
+      document.querySelector('#standby').checked = true;
+      document.querySelector('#monitor').checked = true;
+      document.querySelector('#notify').checked = true;
+      document.querySelector('#arrivedBtn').disabled = false;
+      document.querySelector('#arrivedBtn').textContent = 'Tôi đã vào vị trí';
+      document.querySelector('#statusPill').textContent = 'Đang chờ';
+      document.querySelector('#statusPill').removeAttribute('style');
+      document.querySelector('#dispatchStep').classList.remove('done');
+      showScreen(1);
+    });
+
+    const savedTicket = localStorage.getItem('greenQueueTicket');
+    if (savedTicket) {
+      try { renderTicket(JSON.parse(savedTicket)); showScreen(3); } catch (_) { localStorage.removeItem('greenQueueTicket'); }
+    }
+
+    const modelContext = document.modelContext;
+    if (modelContext?.registerTool) {
+      const webMcpLifecycle = new AbortController();
+      Promise.resolve(modelContext.registerTool({
+        name: 'create_queue_registration',
+        title: 'Đăng ký hàng chờ',
+        description: 'Đăng ký một xe vào hàng chờ Green Queue và hiển thị phiếu chờ điện tử.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            plate: { type: 'string', description: 'Biển số xe' },
+            phone: { type: 'string', description: 'Số điện thoại tài xế' },
+            cargo: { type: 'string', description: 'Loại hàng hóa' }
+          },
+          required: ['plate', 'phone'],
+          additionalProperties: false
+        },
+        annotations: { readOnlyHint: false, untrustedContentHint: false },
+        execute(input) {
+          if (!input || typeof input.plate !== 'string' || !input.plate.trim()) throw new Error('Biển số xe không hợp lệ');
+          if (typeof input.phone !== 'string' || !/^[0-9+ .-]{9,15}$/.test(input.phone)) throw new Error('Số điện thoại không hợp lệ');
+          document.querySelector('#plate').value = input.plate.trim().toUpperCase();
+          document.querySelector('#phone').value = input.phone.trim();
+          if (input.cargo) document.querySelector('#cargo').value = input.cargo;
+          const ticket = {
+            queue: `A-${String(Math.floor(Math.random() * 18) + 12).padStart(3, '0')}`,
+            slot: `E-${Math.floor(Math.random() * 12) + 1}`,
+            wait: `${Math.floor(Math.random() * 24) + 32} phút`,
+            plate: document.querySelector('#plate').value
+          };
+          localStorage.setItem('greenQueueTicket', JSON.stringify(ticket));
+          renderTicket(ticket);
+          showScreen(3);
+          return { status: 'registered', queueNumber: ticket.queue, slot: ticket.slot, estimatedWait: ticket.wait };
+        }
+      }, { signal: webMcpLifecycle.signal })).catch(() => {});
+    }
+  </script>
+</body>
+</html>
