@@ -40,8 +40,14 @@
     .brand { display: flex; align-items: center; gap: 11px; font-weight: 850; letter-spacing: -.03em; }
     .brand-mark { width: 40px; height: 40px; border-radius: 13px; display: grid; place-items: center; background: var(--forest); color: var(--lime); }
     .brand-mark svg { width: 24px; height: 24px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
     .place-chip { display: flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.72); color: var(--muted); font-size: .86rem; }
     .place-chip strong { color: var(--ink); }
+    .role-switch { display: flex; padding: 4px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.82); }
+    .role-btn { min-height: 36px; border: 0; border-radius: 10px; padding: 0 13px; color: var(--muted); background: transparent; font-size: .84rem; font-weight: 800; }
+    .role-btn.active { color: white; background: var(--forest); }
+    .role-view { display: none; }
+    .role-view.active { display: block; animation: rise .28s ease both; }
     .grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 26px; align-items: start; }
     .panel { background: rgba(255,255,255,.96); border: 1px solid rgba(216,225,220,.9); border-radius: 26px; box-shadow: var(--shadow); overflow: hidden; }
     .panel-head { padding: 26px 26px 18px; border-bottom: 1px solid var(--line); }
@@ -116,6 +122,51 @@
     .toast { position: fixed; left: 50%; bottom: 22px; z-index: 10; transform: translate(-50%, 20px); padding: 12px 16px; border-radius: 12px; background: #10251f; color: white; opacity: 0; pointer-events: none; transition: .25s ease; box-shadow: var(--shadow); }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
     .hidden { display: none !important; }
+    .admin-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin: 8px 0 20px; }
+    .admin-head h1 { max-width: 700px; }
+    .live-badge { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 999px; background: #ddf2e6; color: var(--forest-2); font-size: .82rem; font-weight: 800; white-space: nowrap; }
+    .live-badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #28a36a; box-shadow: 0 0 0 5px rgba(40,163,106,.12); }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 13px; margin-bottom: 18px; }
+    .stat { padding: 18px; border: 1px solid var(--line); border-radius: 19px; background: rgba(255,255,255,.9); }
+    .stat span { display: block; color: var(--muted); font-size: .82rem; font-weight: 700; }
+    .stat strong { display: block; margin-top: 7px; font-size: 1.65rem; line-height: 1.1; letter-spacing: -.04em; }
+    .stat small { display: block; margin-top: 6px; color: var(--forest-2); }
+    .admin-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+    .queue-panel { overflow: visible; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 19px 20px; border-bottom: 1px solid var(--line); }
+    .toolbar h2, .side-card h2 { margin: 0; font-size: 1.05rem; letter-spacing: -.02em; }
+    .filter-tabs { display: flex; gap: 6px; }
+    .filter-btn { min-height: 35px; border: 0; border-radius: 10px; padding: 0 11px; color: var(--muted); background: #edf2ef; font-size: .78rem; font-weight: 800; }
+    .filter-btn.active { color: white; background: var(--forest); }
+    .queue-table { width: 100%; border-collapse: collapse; }
+    .queue-table th { padding: 12px 18px; color: var(--muted); background: #f7f9f7; text-align: left; font-size: .75rem; letter-spacing: .04em; text-transform: uppercase; }
+    .queue-table td { padding: 15px 18px; border-top: 1px solid #edf1ef; vertical-align: middle; font-size: .88rem; }
+    .queue-table tbody tr:first-child td { border-top: 0; }
+    .vehicle { display: grid; grid-template-columns: 40px 1fr; gap: 10px; align-items: center; }
+    .vehicle-icon { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; color: var(--forest); background: #edf4ef; font-weight: 900; }
+    .vehicle strong, .vehicle small { display: block; }
+    .vehicle small { color: var(--muted); margin-top: 2px; }
+    .risk { display: inline-flex; padding: 6px 9px; border-radius: 999px; font-size: .75rem; font-weight: 800; }
+    .risk.high { color: #a33a2a; background: #ffebe6; }
+    .risk.medium { color: #8a5b14; background: #fff1d9; }
+    .risk.low { color: #1b704d; background: #ddf2e6; }
+    .row-action { min-height: 36px; border: 1px solid #bfd0c7; border-radius: 10px; padding: 0 11px; color: var(--forest); background: white; font-size: .78rem; font-weight: 850; white-space: nowrap; }
+    .row-action:hover { color: white; background: var(--forest); border-color: var(--forest); }
+    .row-action.done { color: #1b704d; background: #ddf2e6; border-color: transparent; cursor: default; }
+    .admin-side { display: grid; gap: 14px; }
+    .side-card { padding: 20px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,.9); }
+    .power-ring { width: 132px; aspect-ratio: 1; display: grid; place-items: center; margin: 18px auto; border-radius: 50%; background: conic-gradient(var(--forest) 0 72%, #e3ebe6 72%); position: relative; }
+    .power-ring::before { content: ''; position: absolute; inset: 12px; border-radius: 50%; background: white; }
+    .power-ring div { z-index: 1; text-align: center; }
+    .power-ring strong, .power-ring small { display: block; }
+    .power-ring strong { font-size: 1.45rem; }
+    .power-ring small { color: var(--muted); }
+    .capacity { display: grid; gap: 11px; margin-top: 15px; }
+    .capacity-row { display: grid; grid-template-columns: 52px 1fr 35px; gap: 9px; align-items: center; font-size: .82rem; }
+    .bar { height: 8px; overflow: hidden; border-radius: 999px; background: #e4ebe7; }
+    .bar span { display: block; height: 100%; border-radius: inherit; background: var(--forest-2); }
+    .alert-card { background: #fff6e8; border-color: #f2d8ab; }
+    .alert-card p { margin: 7px 0 0; color: #765c32; font-size: .84rem; }
     @media (max-width: 820px) {
       .shell { padding: 15px 13px 30px; }
       .topbar { margin-bottom: 15px; }
@@ -123,16 +174,41 @@
       .aside { order: -1; grid-template-columns: 1fr 1fr; }
       .info-card { grid-column: 1 / -1; }
       .panel { border-radius: 22px; }
+      .topbar { flex-wrap: wrap; }
+      .top-actions { width: 100%; justify-content: space-between; }
+      .admin-grid { grid-template-columns: 1fr; }
+      .admin-side { grid-template-columns: 1fr 1fr; }
+      .stats { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 560px) {
       .brand .brand-text { display: none; }
       .place-chip { max-width: calc(100vw - 82px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .top-actions { align-items: stretch; flex-direction: column; }
+      .place-chip { max-width: 100%; justify-content: center; }
+      .role-switch { width: 100%; }
+      .role-btn { flex: 1; }
       .panel-head, .screen { padding-left: 18px; padding-right: 18px; }
       .fields, .ticket-grid { grid-template-columns: 1fr; }
       .aside { grid-template-columns: 1fr; }
       .note { display: none; }
       .actions { align-items: stretch; }
       .btn.primary { flex: 1; }
+      .admin-head { align-items: start; flex-direction: column; }
+      .stats { grid-template-columns: 1fr 1fr; gap: 9px; }
+      .stat { padding: 14px; }
+      .stat strong { font-size: 1.35rem; }
+      .toolbar { align-items: flex-start; flex-direction: column; }
+      .queue-table thead { display: none; }
+      .queue-table, .queue-table tbody, .queue-table tr, .queue-table td { display: block; width: 100%; }
+      .queue-table tr { padding: 14px 16px; border-top: 1px solid var(--line); }
+      .queue-table tr:first-child { border-top: 0; }
+      .queue-table td { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 5px 0; border: 0; }
+      .queue-table td::before { content: attr(data-label); color: var(--muted); font-size: .78rem; font-weight: 700; }
+      .queue-table td:first-child::before, .queue-table td:last-child::before { display: none; }
+      .queue-table td:first-child { margin-bottom: 6px; }
+      .queue-table td:last-child { margin-top: 8px; }
+      .row-action { width: 100%; min-height: 42px; }
+      .admin-side { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -145,9 +221,16 @@
         </span>
         <span class="brand-text">Green Queue</span>
       </div>
-      <div class="place-chip"><span aria-hidden="true">●</span> Điểm vào: <strong id="gateName">Bãi chờ Hữu Nghị</strong></div>
+      <div class="top-actions">
+        <div class="place-chip"><span aria-hidden="true">●</span> Điểm vào: <strong id="gateName">Bãi chờ Hữu Nghị</strong></div>
+        <nav class="role-switch" aria-label="Chọn vai trò">
+          <button class="role-btn active" type="button" data-role="driver">Tài xế</button>
+          <button class="role-btn" type="button" data-role="operator">Ban điều phối</button>
+        </nav>
+      </div>
     </header>
 
+    <div class="role-view active" id="driverView">
     <div class="grid">
       <section class="panel" aria-live="polite">
         <div class="panel-head">
@@ -239,6 +322,61 @@
         <div class="note"><strong>Dữ liệu thử nghiệm</strong><p>Đây là nguyên mẫu để minh họa quy trình Green Waiting Module. Số thứ tự và thời gian chờ hiện được mô phỏng.</p></div>
       </aside>
     </div>
+    </div>
+
+    <section class="role-view" id="operatorView" aria-labelledby="operatorTitle">
+      <div class="admin-head">
+        <div>
+          <p class="eyebrow">Trung tâm điều phối Green Waiting</p>
+          <h1 id="operatorTitle">Theo dõi và điều phối hàng chờ</h1>
+          <p class="lede">Kiểm soát trạng thái xe, rủi ro hàng hóa và công suất E-Standby tại một nơi.</p>
+        </div>
+        <span class="live-badge">Dữ liệu đang cập nhật</span>
+      </div>
+
+      <div class="stats" aria-label="Tổng quan vận hành">
+        <article class="stat"><span>Xe đang chờ</span><strong id="waitingCount">18</strong><small>Trong hàng chờ ảo</small></article>
+        <article class="stat"><span>Đang E-Standby</span><strong id="standbyCount">12</strong><small>12/16 điểm cấp điện</small></article>
+        <article class="stat"><span>Thời gian trung bình</span><strong>47 phút</strong><small>Giảm 16% so với hôm qua</small></article>
+        <article class="stat"><span>Cảnh báo chất lượng</span><strong id="riskCount">2</strong><small>Cần kiểm tra ngay</small></article>
+      </div>
+
+      <div class="admin-grid">
+        <section class="panel queue-panel">
+          <div class="toolbar">
+            <h2>Danh sách phương tiện</h2>
+            <div class="filter-tabs" aria-label="Lọc hàng chờ">
+              <button class="filter-btn active" type="button" data-filter="all">Tất cả</button>
+              <button class="filter-btn" type="button" data-filter="risk">Rủi ro cao</button>
+              <button class="filter-btn" type="button" data-filter="ready">Sẵn sàng</button>
+            </div>
+          </div>
+          <table class="queue-table">
+            <thead><tr><th>Phương tiện</th><th>Số chờ</th><th>Vị trí</th><th>Thời gian</th><th>Rủi ro</th><th>Điều phối</th></tr></thead>
+            <tbody id="queueBody"></tbody>
+          </table>
+        </section>
+
+        <aside class="admin-side">
+          <article class="side-card">
+            <h2>Công suất E-Standby</h2>
+            <div class="power-ring"><div><strong>72%</strong><small>đang sử dụng</small></div></div>
+            <div class="capacity">
+              <div class="capacity-row"><span>Khu A</span><div class="bar"><span style="width:88%"></span></div><b>7/8</b></div>
+              <div class="capacity-row"><span>Khu B</span><div class="bar"><span style="width:63%"></span></div><b>5/8</b></div>
+            </div>
+          </article>
+          <article class="side-card alert-card">
+            <h2>Cảnh báo vận hành</h2>
+            <p>Xe 29H-817.26 có nhiệt độ thùng hàng vượt ngưỡng SOP. Kiểm tra thiết bị lạnh trước khi dispatch.</p>
+          </article>
+          <article class="side-card">
+            <h2>Nguyên tắc xếp lượt</h2>
+            <p style="margin:7px 0 0;color:var(--muted);font-size:.84rem">Chỉ xe đủ Readiness mới được xét. Trong nhóm sẵn sàng, hệ thống ưu tiên Cargo Risk rồi đến thời gian chờ/FCFS.</p>
+          </article>
+        </aside>
+      </div>
+    </section>
   </main>
   <div class="toast" id="toast" role="status"></div>
 
@@ -257,6 +395,64 @@
     const params = new URLSearchParams(location.search);
     const gate = params.get('gate');
     if (gate) document.querySelector('#gateName').textContent = gate;
+
+    const sampleQueue = [
+      { id: 'q18', plate: '29H-817.26', cargo: 'Sầu riêng tươi', queue: 'A-018', slot: 'E-04', wait: '58 phút', risk: 'high', ready: false, state: 'waiting' },
+      { id: 'q19', plate: '12C-246.88', cargo: 'Sầu riêng tươi', queue: 'A-019', slot: 'E-07', wait: '51 phút', risk: 'medium', ready: true, state: 'waiting' },
+      { id: 'q20', plate: '15H-092.14', cargo: 'Thanh long', queue: 'A-020', slot: 'B-03', wait: '43 phút', risk: 'low', ready: true, state: 'waiting' },
+      { id: 'q21', plate: '98C-315.70', cargo: 'Mít tươi', queue: 'A-021', slot: 'E-09', wait: '36 phút', risk: 'medium', ready: true, state: 'waiting' }
+    ];
+    let activeFilter = 'all';
+
+    function storedQueue() {
+      try { return JSON.parse(localStorage.getItem('greenQueueRecords') || '[]'); }
+      catch (_) { return []; }
+    }
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[char]));
+    }
+    function allQueue() { return [...storedQueue(), ...sampleQueue]; }
+    function riskLabel(risk) { return risk === 'high' ? 'Cao' : risk === 'medium' ? 'Trung bình' : 'Thấp'; }
+    function renderQueue() {
+      const records = allQueue().filter(item => activeFilter === 'all' || (activeFilter === 'risk' && item.risk === 'high') || (activeFilter === 'ready' && item.ready));
+      document.querySelector('#queueBody').innerHTML = records.map(item => `
+        <tr data-id="${escapeHTML(item.id)}">
+          <td><div class="vehicle"><span class="vehicle-icon">${escapeHTML(item.plate.slice(0,2))}</span><span><strong>${escapeHTML(item.plate)}</strong><small>${escapeHTML(item.cargo)}</small></span></div></td>
+          <td data-label="Số chờ"><b>${escapeHTML(item.queue)}</b></td>
+          <td data-label="Vị trí">${escapeHTML(item.slot)}</td>
+          <td data-label="Đã chờ">${escapeHTML(item.wait)}</td>
+          <td data-label="Rủi ro"><span class="risk ${item.risk}">${riskLabel(item.risk)}</span></td>
+          <td><button class="row-action ${item.state === 'called' ? 'done' : ''}" type="button" data-call="${escapeHTML(item.id)}" ${!item.ready || item.state === 'called' ? 'disabled' : ''}>${item.state === 'called' ? 'Đã gọi xe' : item.ready ? 'Gọi xe' : 'Cần kiểm tra'}</button></td>
+        </tr>`).join('');
+      document.querySelector('#waitingCount').textContent = 14 + allQueue().filter(item => item.state !== 'called').length;
+      document.querySelector('#riskCount').textContent = allQueue().filter(item => item.risk === 'high').length;
+    }
+    function setRole(role, updateHash = true) {
+      document.querySelector('#driverView').classList.toggle('active', role === 'driver');
+      document.querySelector('#operatorView').classList.toggle('active', role === 'operator');
+      document.querySelectorAll('.role-btn').forEach(button => button.classList.toggle('active', button.dataset.role === role));
+      if (role === 'operator') renderQueue();
+      if (updateHash) history.replaceState(null, '', role === 'operator' ? '#operator' : '#driver');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.querySelectorAll('.role-btn').forEach(button => button.addEventListener('click', () => setRole(button.dataset.role)));
+    document.querySelectorAll('.filter-btn').forEach(button => button.addEventListener('click', () => {
+      activeFilter = button.dataset.filter;
+      document.querySelectorAll('.filter-btn').forEach(item => item.classList.toggle('active', item === button));
+      renderQueue();
+    }));
+    document.querySelector('#queueBody').addEventListener('click', event => {
+      const button = event.target.closest('[data-call]');
+      if (!button) return;
+      const id = button.dataset.call;
+      const userRows = storedQueue();
+      const userItem = userRows.find(item => item.id === id);
+      const sampleItem = sampleQueue.find(item => item.id === id);
+      if (userItem) { userItem.state = 'called'; localStorage.setItem('greenQueueRecords', JSON.stringify(userRows)); }
+      if (sampleItem) sampleItem.state = 'called';
+      renderQueue();
+      toast('Đã gửi thông báo điều phối đến tài xế');
+    });
 
     function showScreen(number) {
       screens.forEach(s => s.classList.toggle('active', Number(s.dataset.screen) === number));
@@ -291,9 +487,13 @@
         queue: `A-${String(seed).padStart(3, '0')}`,
         slot,
         wait: `${Math.floor(Math.random() * 24) + 32} phút`,
-        plate: document.querySelector('#plate').value.trim().toUpperCase()
+        plate: document.querySelector('#plate').value.trim().toUpperCase(),
+        cargo: document.querySelector('#cargo').value
       };
       localStorage.setItem('greenQueueTicket', JSON.stringify(ticket));
+      const records = storedQueue().filter(item => item.plate !== ticket.plate);
+      records.unshift({ id: `user-${Date.now()}`, plate: ticket.plate, cargo: ticket.cargo, queue: ticket.queue, slot: ticket.slot, wait: 'Vừa đăng ký', risk: 'medium', ready: true, state: 'waiting' });
+      localStorage.setItem('greenQueueRecords', JSON.stringify(records));
       renderTicket(ticket);
       showScreen(3);
     });
@@ -330,6 +530,7 @@
     if (savedTicket) {
       try { renderTicket(JSON.parse(savedTicket)); showScreen(3); } catch (_) { localStorage.removeItem('greenQueueTicket'); }
     }
+    setRole(location.hash === '#operator' ? 'operator' : 'driver', false);
 
     const modelContext = document.modelContext;
     if (modelContext?.registerTool) {
